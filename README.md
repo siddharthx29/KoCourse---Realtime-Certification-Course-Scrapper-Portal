@@ -1,8 +1,8 @@
-# KoCourse---Realtime-Certification-Course-Scrapper-Portal
-
-# 🚀 KoCourse — Realtime Certification Course Scrapper Portal
+# 🚀 KoCourse — Realtime Certification Course Scrapper Portal (Django + Scraper)
 
 KoCourse is a full-stack web application that automatically **scrapes certification courses** from multiple platforms and presents them in a **social media-style feed**. Users can explore, preview, and interact with courses through comments, likes, and bookmarks.
+
+This version of the project is built using **Django + Python Scraper**, making it powerful for data extraction and backend processing.
 
 ---
 
@@ -10,33 +10,33 @@ KoCourse is a full-stack web application that automatically **scrapes certificat
 
 * 🔍 **Automated Course Scraping**
 
-  * Fetches latest courses from platforms like Coursera, Udemy, and edX
-  * Extracts title, provider, duration, rating, and course link
+  * Scrapes courses from platforms like Coursera, Udemy, edX
+  * Extracts title, provider, duration, rating, and links
+  * Runs periodically using background jobs
 
 * 📰 **Social Media Feed UI**
 
-  * Instagram/LinkedIn-style course feed
+  * Instagram/LinkedIn-style feed
   * Infinite scrolling
   * Clean card-based layout
 
-* 💬 **Real-Time Comment Section**
+* 💬 **Real-Time Comment System**
 
   * Add, reply, and like comments
-  * Live updates using WebSockets
+  * Live updates using WebSockets (Django Channels)
 
 * 👀 **Course Preview**
 
-  * Modal preview with:
+  * Detailed preview page with:
 
     * Description
-    * Instructor details
-    * Syllabus (if available)
-    * Embedded video (if available)
+    * Instructor info
+    * Course content (if available)
 
 * 🔐 **User Authentication**
 
-  * Secure login/signup system
-  * JWT-based authentication
+  * Secure login/signup
+  * Django authentication system
   * User profiles
 
 * ⭐ **Like & Bookmark System**
@@ -49,41 +49,51 @@ KoCourse is a full-stack web application that automatically **scrapes certificat
 
 ## 🛠️ Tech Stack
 
-### Frontend
+### **Backend**
 
-* React.js
-* Tailwind CSS
-* Axios
-* Socket.io-client
+* Django
+* Django REST Framework
+* Django Channels (WebSockets)
 
-### Backend
+### **Frontend**
 
-* Node.js
-* Express.js
-* Socket.io
+* React.js *(recommended)* OR Django Templates
 
-### Database
+### **Database**
 
-* MongoDB
+* PostgreSQL *(recommended)*
+* SQLite *(for development)*
 
-### Scraper
+### **Scraper**
 
-* Python (BeautifulSoup / Scrapy) OR
-* Node.js (Puppeteer)
+* BeautifulSoup
+* Scrapy *(optional for advanced scraping)*
+* Selenium *(for dynamic websites)*
+
+### **Task Queue (Optional but Recommended)**
+
+* Celery
+* Redis
 
 ---
 
 ## 🏗️ Project Structure
 
-```
+```id="r4mzcc"
 KoCourse/
 │
-├── client/             # React frontend
-├── server/             # Node.js backend
-├── scraper/            # Scraping scripts
-├── models/             # Database schemas
-├── routes/             # API routes
-├── controllers/        # Business logic
+├── backend/                 # Django project
+│   ├── kocourse/            # Main project settings
+│   ├── courses/             # Course app
+│   ├── users/               # User authentication
+│   ├── comments/            # Comment system
+│   └── api/                 # API layer (DRF)
+│
+├── frontend/                # React frontend (optional)
+│
+├── scraper/                 # Python scraping scripts
+│
+├── manage.py
 └── README.md
 ```
 
@@ -93,100 +103,118 @@ KoCourse/
 
 ### 1. Clone the repository
 
-```bash
+```bash id="m9q2js"
 git clone https://github.com/your-username/KoCourse.git
 cd KoCourse
 ```
 
-### 2. Install dependencies
+---
 
-#### For backend:
+### 2. Setup Backend (Django)
 
-```bash
-cd server
-npm install
-```
-
-#### For frontend:
-
-```bash
-cd client
-npm install
+```bash id="s4g2vh"
+cd backend
+python -m venv venv
+source venv/bin/activate   # (Windows: venv\Scripts\activate)
+pip install -r requirements.txt
 ```
 
 ---
 
-### 3. Environment Variables
+### 3. Configure Environment Variables
 
-Create a `.env` file in the server folder:
+Create a `.env` file inside `backend/`:
 
-```
-PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_secret_key
-```
-
----
-
-### 4. Run the application
-
-#### Start backend:
-
-```bash
-cd server
-npm run dev
-```
-
-#### Start frontend:
-
-```bash
-cd client
-npm start
+```id="ykpl3h"
+SECRET_KEY=your_secret_key
+DEBUG=True
+DB_NAME=kocourse
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
 ---
 
-### 5. Run Scraper (optional)
+### 4. Apply Migrations
 
-```bash
+```bash id="a8w7tc"
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+### 5. Run Development Server
+
+```bash id="tn6r7c"
+python manage.py runserver
+```
+
+---
+
+### 6. Run Scraper
+
+```bash id="y4k8zs"
 cd scraper
 python scraper.py
 ```
 
 ---
 
-## 🔄 Workflow
+### 7. (Optional) Run Frontend
 
-1. Scraper collects course data periodically
-2. Data is stored in MongoDB
-3. Backend provides REST APIs
-4. Frontend displays courses in feed format
-5. Users interact via comments, likes, and bookmarks
-6. Real-time updates handled using WebSockets
+```bash id="yvl3h2"
+cd frontend
+npm install
+npm start
+```
 
 ---
 
-## 📷 Screenshots
+## 🔄 Workflow
 
-> Add your UI screenshots here (Feed, Comment Section, Preview Modal)
+1. Scraper fetches course data periodically
+2. Data is stored in PostgreSQL database
+3. Django backend exposes REST APIs
+4. Frontend displays courses in feed format
+5. Users interact via comments, likes, bookmarks
+6. Real-time updates handled using Django Channels
+
+---
+
+## 📊 Database Models (Overview)
+
+* **User**
+
+  * username, email, password
+
+* **Course**
+
+  * title, provider, duration, rating, link, description
+
+* **Comment**
+
+  * user, course, content, timestamp
 
 ---
 
 ## 🚧 Challenges
 
-* Handling dynamic websites during scraping
-* Avoiding CAPTCHAs and rate limits
-* Maintaining real-time synchronization
-* Ensuring scalable backend performance
+* Handling dynamic websites (requires Selenium)
+* Avoiding duplicate course entries
+* Managing real-time communication
+* Scraping restrictions (CAPTCHA, rate limits)
 
 ---
 
 ## 🔮 Future Improvements
 
-* 🤖 AI-based course recommendations
+* 🤖 AI-based course recommendation
 * 📱 Mobile application
 * 🎓 Certificate verification system
-* 📊 User analytics dashboard
+* 📈 Analytics dashboard
 
 ---
 
@@ -201,6 +229,8 @@ Contributions are welcome! Feel free to fork the repo and submit a pull request.
 This project is licensed under the MIT License.
 
 ---
+
+
 
 ## ⭐ Support
 
